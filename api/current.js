@@ -1,7 +1,9 @@
 export default async function handler(req, res) {
   try {
+    // Build the correct base URL dynamically
     const baseUrl = `https://${req.headers.host}`;
 
+    // 1. Get access token from our token endpoint
     const tokenResponse = await fetch(`${baseUrl}/api/token`);
     const tokenData = await tokenResponse.json();
 
@@ -23,7 +25,6 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-
     const track = data.item;
 
     res.status(200).json({
