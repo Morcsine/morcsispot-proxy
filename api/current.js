@@ -1,7 +1,8 @@
 export default async function handler(req, res) {
   try {
-    // 1. Get access token from our token endpoint
-    const tokenResponse = await fetch(`${process.env.VERCEL_URL}/api/token`);
+    const baseUrl = `https://${req.headers.host}`;
+
+    const tokenResponse = await fetch(`${baseUrl}/api/token`);
     const tokenData = await tokenResponse.json();
 
     if (!tokenData.access_token) {
