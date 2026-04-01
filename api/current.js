@@ -1,9 +1,22 @@
 export default async function handler(req, res) {
+  // --- CORS preflight ---
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    return res.status(200).end();
+  }
+
+  // --- CORS headers ---
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
   try {
-    // Build the correct base URL dynamically
+    // Build correct base URL dynamically (works for all deployments)
     const baseUrl = `https://${req.headers.host}`;
 
-    // 1. Get access token from our token endpoint
+    // 1. Get access token
     const tokenResponse = await fetch(`${baseUrl}/api/token`);
     const tokenData = await tokenResponse.json();
 
@@ -20,6 +33,7 @@ export default async function handler(req, res) {
       }
     });
 
+    // Nothing playing
     if (response.status === 204) {
       return res.status(200).json({ is_playing: false });
     }
@@ -27,7 +41,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     const track = data.item;
 
-    res.status(200).json({
+    return res.status(200).json({
       is_playing: data.is_playing,
       progress_ms: data.progress_ms,
       duration_ms: track.duration_ms,
@@ -41,6 +55,6 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
